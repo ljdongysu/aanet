@@ -235,8 +235,10 @@ class DeformConv(nn.Module):
         self.weight.data.uniform_(-stdv, stdv)
 
     def forward(self, x, offset):
-        return deform_conv(x, offset, self.weight, self.stride, self.padding,
+        y = deform_conv(x, offset, self.weight, self.stride, self.padding,
                            self.dilation, self.groups, self.deformable_groups)
+        print("DeformConv.x.shape: ", x.shape, "y.shape: ", y.shape)
+        return y
 
 
 class DeformConvPack(DeformConv):
@@ -346,9 +348,11 @@ class ModulatedDeformConv(nn.Module):
             self.bias.data.zero_()
 
     def forward(self, x, offset, mask):
-        return modulated_deform_conv(x, offset, mask, self.weight, self.bias,
+        y = modulated_deform_conv(x, offset, mask, self.weight, self.bias,
                                      self.stride, self.padding, self.dilation,
                                      self.groups, self.deformable_groups)
+        print("ModulatedDeformConv.x.shape: ", x.shape, "y.shape: ", y.shape)
+        return y
 
 
 class ModulatedDeformConvPack(ModulatedDeformConv):

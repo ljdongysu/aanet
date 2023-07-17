@@ -129,7 +129,7 @@ class PSMNetBasicAggregation(nn.Module):
                                       final_conv)
 
     def forward(self, cost):
-        cost0 = self.dres0(cost)
+        cost0 = self.dres0(cost[0])
         cost0 = self.dres1(cost0) + cost0
         cost0 = self.dres2(cost0) + cost0
         cost0 = self.dres3(cost0) + cost0
@@ -330,12 +330,12 @@ class AdaptiveAggregationModule(nn.Module):
             num_candidates = max_disp // (2 ** i)
             branch = nn.ModuleList()
             for j in range(num_blocks):
-                if simple_bottleneck:
-                    branch.append(SimpleBottleneck(num_candidates, num_candidates))
-                else:
-                    branch.append(DeformSimpleBottleneck(num_candidates, num_candidates, modulation=True,
-                                                         mdconv_dilation=mdconv_dilation,
-                                                         deformable_groups=deformable_groups))
+                # if simple_bottleneck:
+                branch.append(SimpleBottleneck(num_candidates, num_candidates))
+                # else:
+                #     branch.append(DeformSimpleBottleneck(num_candidates, num_candidates, modulation=True,
+                #                                          mdconv_dilation=mdconv_dilation,
+                #                                          deformable_groups=deformable_groups))
 
             self.branches.append(nn.Sequential(*branch))
 
@@ -379,7 +379,9 @@ class AdaptiveAggregationModule(nn.Module):
             branch = self.branches[i]
             for j in range(self.num_blocks):
                 dconv = branch[j]
+                print("before dconv x.size: ", x[i].shape)
                 x[i] = dconv(x[i])
+                print("after dconv x.size: ", x[i].shape)
 
         if self.num_scales == 1:  # without fusions
             return x

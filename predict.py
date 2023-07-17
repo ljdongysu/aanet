@@ -1,3 +1,5 @@
+import time
+
 import torch
 import torch.nn.functional as F
 
@@ -114,6 +116,13 @@ def main():
     # Inference
     aanet.eval()
 
+    # height = 384
+    # width = 1248
+    # input_L = torch.randn(1, 3, height, width, device='cuda:0')
+    # input_R = torch.randn(1, 3, height, width, device='cuda:0')
+    # model_trace = torch.jit.trace(aanet, (input_L,input_R))
+    # model_trace.save("aanet.pt")
+
     if args.data_dir.endswith('/'):
         args.data_dir = args.data_dir[:-1]
 
@@ -160,7 +169,6 @@ def main():
 
         with torch.no_grad():
             pred_disp = aanet(left, right)[-1]  # [B, H, W]
-
         if pred_disp.size(-1) < left.size(-1):
             pred_disp = pred_disp.unsqueeze(1)  # [B, 1, H, W]
             pred_disp = F.interpolate(pred_disp, (left.size(-2), left.size(-1)),
