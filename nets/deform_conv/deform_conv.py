@@ -235,11 +235,8 @@ class DeformConv(nn.Module):
         self.weight.data.uniform_(-stdv, stdv)
 
     def forward(self, x, offset):
-        y = deform_conv(x, offset, self.weight, self.stride, self.padding,
+        return deform_conv(x, offset, self.weight, self.stride, self.padding,
                            self.dilation, self.groups, self.deformable_groups)
-        print("DeformConv.x.shape: ", x.shape, "y.shape: ", y.shape)
-        return y
-
 
 class DeformConvPack(DeformConv):
     """A Deformable Conv Encapsulation that acts as normal Conv layers.
@@ -348,11 +345,9 @@ class ModulatedDeformConv(nn.Module):
             self.bias.data.zero_()
 
     def forward(self, x, offset, mask):
-        y = modulated_deform_conv(x, offset, mask, self.weight, self.bias,
+        return modulated_deform_conv(x, offset, mask, self.weight, self.bias,
                                      self.stride, self.padding, self.dilation,
                                      self.groups, self.deformable_groups)
-        print("ModulatedDeformConv.x.shape: ", x.shape, "y.shape: ", y.shape)
-        return y
 
 
 class ModulatedDeformConvPack(ModulatedDeformConv):
