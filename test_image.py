@@ -276,8 +276,9 @@ def main():
 
         disp = pred_disp[0].detach().cpu().numpy()  # [H, W]
         print("disp.shape: ", disp.shape)
-        cv2.imwrite(op.replace(".jpg",".png"), (disp * 256.).astype(np.uint16))
-        WriteDepth(disp,left_copy,args.save_dir, op)
+        op = op.replace(".jpg", ".png")
+        cv2.imwrite(op, (disp * 256.).astype(np.uint16))
+        WriteDepth(3423/disp,left_copy,args.save_dir, op)
 
 if __name__ == '__main__':
     main()
