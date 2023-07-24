@@ -11,11 +11,17 @@ def Print_distance(depth, tof):
     image_depth = image_depth.sum(axis=2)
     image_depth_tof = np.abs(image_depth * image_tof_with_value - image_tof)
     print("The number tof points: ", np.sum(image_tof_with_value))
-    print("mean distance: ", np.sum(image_depth_tof) / np.sum(image_tof_with_value))
-    print("max distance: ", np.max(image_depth_tof), "min distance: ", np.min(image_depth_tof))
-    print("The number of point's distance > 10: ", np.sum(image_depth_tof > 10))
-    print("The number of point's distance > 20: ", np.sum(image_depth_tof > 20))
-    cv2.imwrite("image_depth_tof.png", image_depth_tof)
+    print("median distance of tof: ", np.median(image_tof[image_tof > 0]))
+    print("mean distance between tof and depth: ", np.sum(image_depth_tof) / np.sum(image_tof_with_value))
+    print("max distance between tof and depth: ", np.max(image_depth_tof), "min distance: ", np.min(image_depth_tof))
+    print("The number of point's distance between tof and depth > 5: ", np.sum(image_depth_tof > 5),
+          ', ratio: {:.2%}'.format(np.sum(image_depth_tof > 5)/np.sum(image_tof_with_value)))
+    print("The number of point's distancebetween tof and depth > 10 : ", np.sum(image_depth_tof > 10),
+          ', ratio: {:.2%}'.format(np.sum(image_depth_tof > 10)/np.sum(image_tof_with_value)))
+    print("The number of point's distance between tof and depth > 20: ", np.sum(image_depth_tof > 20),
+          ', ratio: {:.2%}'.format(np.sum(image_depth_tof > 20)/np.sum(image_tof_with_value)))
+    cv2.imwrite("image_depth_tof.png", image_depth_tof + 50)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
