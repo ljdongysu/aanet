@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import argparse
 import matplotlib.pyplot as plt
+from matplotlib.font_manager import FontProperties
 
 def GetDepthImg(img):
     depth_img_rest = img.copy()
@@ -36,28 +37,63 @@ def Print_distance(depth, tof, image=None):
         image_depth_tof = np.abs(image_depth * image_box - image_tof * image_box)
     print("选中的tof点数量: {}，全部tof点数量： {}".format(np.sum(image_box), np.sum(image_tof_with_value)))
     print("选中的tof点中值: ", np.median(image_tof[image_box > 0]))
-    print("深度估计与选中tof点的平均误差: ", np.sum(image_depth_tof) / np.sum(image_box))
+    print("深度估计与选中tof点的平均误差: {:.2}".format(np.sum(image_depth_tof) / np.sum(image_box)))
     print("深度点与选中tof点最大误差: ", np.max(image_depth_tof))
-    print("误差 > 2cm 点的数量： {}, 比例： {:.2%} ".format(np.sum(image_depth_tof > 2),np.sum(image_depth_tof > 2)/np.sum(image_tof_with_value)))
-    print("误差 > 5cm 点的数量： {}, 比例： {:.2%} ".format(np.sum(image_depth_tof > 5),np.sum(image_depth_tof > 5)/np.sum(image_tof_with_value)))
+    print("误差 > 2cm 点的数量： {}, 比例： {:.2%} ".format(np.sum(image_depth_tof > 2),np.sum(image_depth_tof > 2)/np.sum(image_box)))
+    print("误差 > 5cm 点的数量： {}, 比例： {:.2%} ".format(np.sum(image_depth_tof > 5),np.sum(image_depth_tof > 5)/np.sum(image_box)))
     perception = image_depth_tof[image_depth_tof > 0] / (image_tof * image_box)[image_depth_tof > 0]
-    perception_bigger_2 = np.sum(perception > 0.02) / np.sum(image_box)
-    perception_bigger_5 = np.sum(perception > 0.05) / np.sum(image_box)
 
-    x = image_depth_tof[image_depth_tof > 0]
-    y = perception
     print("误差比例平均值: {:.2%}".format(np.mean(perception)))
 
+    error_bigger_0 = image_depth_tof[image_depth_tof > 0]
+
+    plt.hist(error_bigger_0, bins=int(np.max(error_bigger_0)))
+    font = FontProperties(fname=r"/usr/share/fonts/Fonts/simsun.ttf", size=14)
+    plt.title("误差值--数量直方图", fontproperties=font)
+    plt.xlabel("误差值：(双目-tof点）", fontproperties=font)
+    plt.ylabel("数量", fontproperties=font)
+    plt.xticks(np.linspace(0,np.max(error_bigger_0), num=10))
+    plt.show()
     plt.hist(perception, bins=int(np.max(perception) * 100))
+    font = FontProperties(fname=r"/usr/share/fonts/Fonts/simsun.ttf", size=14)
+    plt.title("误差率--数量直方图", fontproperties=font)
+    plt.xlabel("误差率：(双目-tof点)/tof点", fontproperties=font)
+    plt.xticks(np.linspace(0,np.max(perception), num=10))
+    plt.ylabel("数量", fontproperties=font)
+
     plt.show()
 
 
-    print(perception_bigger_2, perception_bigger_5)
     print("误差/真实距离 < 1%的点数数量: {}, 比例： {:.2%}".format(np.sum(perception < 0.01), np.sum(perception < 0.01) / np.sum(image_box)))
     print("误差/真实距离 > 2%的点数数量: {}, 比例： {:.2%}".format(np.sum(perception > 0.02), np.sum(perception > 0.02) / np.sum(image_box)))
     print("误差/真实距离 > 5%的点数数量: {}, 比例： {:.2%}".format(np.sum(perception > 0.05) , np.sum(perception > 0.05) / np.sum(image_box)))
-
+    image_depth_tof[image_depth_tof>0] = image_depth_tof[image_depth_tof>0] + 100
     cv2.imwrite("image_depth_tof.png", GetDepthImg(image_depth_tof))
+
+    # print("\n===================================== ")
+    # print("reduce 2.5 before abs:")
+    # print("===================================== \n")
+    # image_depth_tof = np.abs(image_depth * image_box - image_tof * image_box + image_box * 2.5)
+    # print("选中的tof点数量: {}，全部tof点数量： {}".format(np.sum(image_box), np.sum(image_tof_with_value)))
+    # print("选中的tof点中值: ", np.median(image_tof[image_box > 0]))
+    # print("深度估计与选中tof点的平均误差: {}".format(np.sum(image_depth_tof) / np.sum(image_box)))
+    # print("深度点与选中tof点最大误差: ", np.max(image_depth_tof))
+    # print("误差 > 2cm 点的数量： {}, 比例： {:.2%} ".format(np.sum(image_depth_tof > 2),np.sum(image_depth_tof > 2)/np.sum(image_box)))
+    # print("误差 > 5cm 点的数量： {}, 比例： {:.2%} ".format(np.sum(image_depth_tof > 5),np.sum(image_depth_tof > 5)/np.sum(image_box)))
+    # perception = image_depth_tof[image_depth_tof > 0] / (image_tof * image_box)[image_depth_tof > 0]
+    #
+    # print("误差比例平均值: {:.2%}".format(np.mean(perception)))
+    #
+    # plt.hist(perception, bins=int(np.max(perception) * 100))
+    # plt.show()
+    #
+    # print("误差/真实距离 < 1%的点数数量: {}, 比例： {:.2%}".format(np.sum(perception < 0.01), np.sum(perception < 0.01) / np.sum(image_box)))
+    # print("误差/真实距离 > 2%的点数数量: {}, 比例： {:.2%}".format(np.sum(perception > 0.02), np.sum(perception > 0.02) / np.sum(image_box)))
+    # print("误差/真实距离 > 5%的点数数量: {}, 比例： {:.2%}".format(np.sum(perception > 0.05) , np.sum(perception > 0.05) / np.sum(image_box)))
+    # image_depth_tof[image_depth_tof>0] = image_depth_tof[image_depth_tof>0] + 100
+    # cv2.imwrite("image_depth_tof_2.5.png", GetDepthImg(image_depth_tof))
+
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
