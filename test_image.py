@@ -19,6 +19,8 @@ from utils.file_io import read_img
 from numpy import savez_compressed
 import re
 
+__all__ = ["GetDepthImgPSL", "Walk", "MkdirSimple", "GetDepthImg"]
+
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD = [0.229, 0.224, 0.225]
 
@@ -82,7 +84,6 @@ def GetDepthImgPSL(img):
     depth_img_B = depth_img_rest.copy()
     depth_img_B[depth_img_rest > 255] = 255
     depth_img_rgb = np.stack([depth_img_R, depth_img_G, depth_img_B], axis=2)
-    depth_img_rgb[depth_img_rgb[:,:,2]>0]
     return depth_img_rgb.astype(np.uint8)
 
 
