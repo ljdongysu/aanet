@@ -158,6 +158,7 @@ If you find our work useful in your research, please consider citing our paper:
 Part of the code is adopted from previous works: [PSMNet](https://github.com/JiaRenChang/PSMNet), [GwcNet](https://github.com/xy-guo/GwcNet) and [GA-Net](https://github.com/feihuzhang/GANet). We thank the original authors for their awesome repos. The deformable convolution op is taken from [mmdetection](https://github.com/open-mmlab/mmdetection). The FLOPs counting code is modified from [pytorch-OpCounter](https://github.com/Lyken17/pytorch-OpCounter). The code structure is partially inspired by [mmdetection](https://github.com/open-mmlab/mmdetection) and our previous work [rdn4depth](https://github.com/haofeixu/rdn4depth).
 
 
-
+# 对比两个深度图像的输出结果
+python compare_tof_img.py --depth /data/Parker/test_result/aanet+/data_depth_REMAP/depth_psl/data_depth/data_2023_07_31_angle_0_pick/20210223_1442/cam0/24_1614048140816195.png --tof /data/Parker/test_result/NPU/depth_data/data_2023_07_31_angle_0_pick/result_tof/20210223_1442/cam0/24_1614048140816195.png --image /data/Parker/test_result/NPU/depth_data/data_2023_07_31_angle_0_pick/result_image_with_tof/20210223_1442/cam0/24_1614048140816195.png
 
 

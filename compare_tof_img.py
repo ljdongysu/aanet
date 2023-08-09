@@ -29,7 +29,7 @@ def Print_distance(depth, tof, image=None):
     image_tof = image_tof[:, :, 0] + (image_tof[:, :, 1] > 0) * 255 + image_tof[:, :, 1] + (image_tof[:, :, 2] > 0) * 511 + image_tof[:, :, 2]
     image_tof_with_value = image_tof.copy()
     image_tof_with_value[image_tof > 0] = 1
-    image_depth = image_depth.sum(axis=2)
+    image_depth = image_depth[:, :, 0] + (image_depth[:, :, 1] > 0) * 255 + image_depth[:, :, 1] + (image_depth[:, :, 2] > 0) * 511 + image_depth[:, :, 2]
     if image is None:
         image_depth_tof = np.abs(image_depth * image_tof_with_value - image_tof)
     else:
