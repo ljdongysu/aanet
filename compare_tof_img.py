@@ -41,10 +41,14 @@ def Print_distance(depth, tof, image=None):
     image_tof_with_value[image_tof > 0] = 1
 
     if image is None:
-        image_depth_tof = np.abs(image_depth * image_tof_with_value - image_tof)
+        image_depth_tof = image_depth * image_tof_with_value - image_tof
+        image_dis_show = image_depth_tof.copy()
+        image_depth_tof = np.abs(image_depth_tof)
     else:
         image_box = (image_with_tof_box[:, :, 0] == 0) * (image_with_tof_box[:, :, 1] == 0) * (image_with_tof_box[:, :, 2] == 255) * image_tof_with_value
-        image_depth_tof = np.abs(image_depth * image_box - image_tof * image_box)
+        image_depth_tof = image_depth * image_box - image_tof * image_box
+        image_dis_show = image_depth_tof.copy()
+        image_depth_tof = np.abs(image_depth_tof)
     print("选中的tof点数量: {}".format(np.sum(image_box)))
     print("选中的tof点中值: ", np.median(image_tof[image_box > 0]))
     print("深度估计与选中tof点的平均误差: {:.2}".format(np.sum(image_depth_tof) / np.sum(image_box)))
@@ -63,21 +67,25 @@ def Print_distance(depth, tof, image=None):
     plt.xlabel("误差值：(双目-tof点）", fontproperties=font)
     plt.ylabel("数量", fontproperties=font)
     plt.xticks(np.linspace(0,np.max(error_bigger_0), num=10))
-    plt.show()
+    plt.savefig("误差.png")
+    plt.clf()
     plt.hist(perception, bins=int(np.max(perception) * 100))
     font = FontProperties(fname=r"/usr/share/fonts/Fonts/simsun.ttf", size=14)
     plt.title("误差率--数量直方图", fontproperties=font)
     plt.xlabel("误差率：(双目-tof点)/tof点", fontproperties=font)
     plt.xticks(np.linspace(0,np.max(perception), num=10))
     plt.ylabel("数量", fontproperties=font)
-
-    plt.show()
+    plt.savefig("误差率.png")
+    plt.clf()
 
     print("误差/真实距离 < 1%的点数数量: {}, 比例： {:.2%}".format(np.sum(perception < 0.01), np.sum(perception < 0.01) / np.sum(image_box)))
     print("误差/真实距离 > 2%的点数数量: {}, 比例： {:.2%}".format(np.sum(perception > 0.02), np.sum(perception > 0.02) / np.sum(image_box)))
     print("误差/真实距离 > 5%的点数数量: {}, 比例： {:.2%}".format(np.sum(perception > 0.05) , np.sum(perception > 0.05) / np.sum(image_box)))
     image_depth_tof[image_depth_tof>0] = image_depth_tof[image_depth_tof>0] + 100
     cv2.imwrite("image_depth_tof.png", GetDepthImg(image_depth_tof))
+    plt.imshow(image_dis_show)
+    plt.colorbar()
+    plt.savefig("dis_image.png")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
