@@ -299,7 +299,7 @@ def main():
         disp = pred_disp[0].detach().cpu().numpy()  # [H, W]
         print("disp.shape: ", disp.shape)
         op = op.replace(".jpg", ".png")
-        cv2.imwrite(op, (disp * 256.).astype(np.uint16))
+        cv2.imwrite(op, cv2.applyColorMap((disp).astype(np.uint8), cv2.COLORMAP_HOT))
         WriteDepth(3423/disp,left_copy,args.save_dir, op)
 
 if __name__ == '__main__':
