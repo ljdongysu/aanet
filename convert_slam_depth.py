@@ -75,6 +75,8 @@ if __name__ == '__main__':
         write_file = os.path.join(args.output, yaml_file[root_len+1:])
         print(type(write_file), write_file)
         write_file = write_file.replace(".yaml", ".png").replace("img/depth", "img/depth_psl")
+        write_file_show = write_file.replace(".yaml", ".png").replace("img/depth", "img/disp")
+
         cv_file = cv2.FileStorage(yaml_file, cv2.FILE_STORAGE_READ)
         matrix = cv_file.getNode("depth").mat()
 
@@ -83,9 +85,14 @@ if __name__ == '__main__':
 
         matrix *= 100
         print(np.max(matrix), np.min(matrix))
+        disp_img = 3423/matrix
         image_write = GetDepthImgPSL(matrix)
         MkdirSimple(write_file)
         print(write_file)
         cv2.imwrite(write_file, image_write)
 
+        MkdirSimple(write_file_show)
+        print(write_file_show)
+        disp_img = cv2.applyColorMap((disp_img).astype(np.uint8), cv2.COLORMAP_HOT)
+        cv2.imwrite(write_file_show, disp_img)
 
