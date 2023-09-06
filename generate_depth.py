@@ -110,6 +110,8 @@ def WriteDepthScale(depth, limg, path, name, scale=1):
     # MkdirSimple(output_gray_scale)
     print("write depth image: {}".format(output_depth))
     depth = depth * scale
+    depth[depth < 0] = 0
+    depth[depth > 65535] = 65535
     cv2.imwrite(output_depth, depth.astype(np.uint16))
     return
     predict_np = depth.squeeze()
@@ -188,6 +190,7 @@ parser.add_argument('--visualize', action='store_true', help='Visualize disparit
 parser.add_argument('--save_suffix', default='pred', type=str, help='Suffix of save filename')
 parser.add_argument('--save_dir', default='pred', type=str, help='Save prediction directory')
 parser.add_argument('--scale', type=int, required=True, help='scale depth(cm)')
+parser.add_argument('--fb', type=int, default=3424, help='fb for convert disp to depth')
 
 args = parser.parse_args()
 
@@ -303,7 +306,7 @@ def main():
         disp = pred_disp[0].detach().cpu().numpy()  # [H, W]
         op = op.replace(".jpg", ".png")
 
-        WriteDepthScale(3423/disp,left_copy,args.save_dir, op, args.scale)
+        WriteDepthScale(args.fb/disp,left_copy,args.save_dir, op, args.scale)
 
 if __name__ == '__main__':
     main()
